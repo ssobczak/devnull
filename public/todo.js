@@ -5,6 +5,7 @@ app.config(['$routeProvider', function($routeProvider, $locationProvider) {
   $routeProvider.
       when('/players', {templateUrl: 'partials/players-list.html',   controller: 'PlayersListCrtl'}).
       when('/players/:playerId/edit', {templateUrl: 'partials/player-edit.html', controller: 'PlayersEditCtrl'}).
+      when('/map', {templateUrl: 'partials/map.html', controller: 'MapCtrl'}).
       otherwise({redirectTo: '/players'});
 }]);
 
