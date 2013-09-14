@@ -61,3 +61,5 @@ r.request(yeah)
 r.request(yeah)
 r.request(yeah)
 r.request(yeah)
+
+console.log("Not waiting!")
