@@ -4,11 +4,11 @@ var api_key = "034dfb38-c110-4545-8ef1-9453dc83d4a9"
 function Requester() {
 	self = {}
 
-	function do_request(callback) {
+	function do_request(command, callback) {
 		var req = https.request({ 
 			host: '192.168.151.182', 
 			port: 8000,
-			path: "/api3/?session=" + api_key + "&command=getparty",
+			path: "/api3/?session=" + api_key + "&command=" + command,
 			method: 'GET',
 			rejectUnauthorized: false,
 			requestCert: true,
@@ -33,18 +33,18 @@ function Requester() {
 	last_req = 0
 	queue_len = 0
 
-	self.request = function(cb) {
+	self.request = function(command, cb) {
 		now = new Date()
 
 		if (now - last_req > 1000 && queue_len == 0) {
 			last_req = now
-			do_request(cb)
+			do_request(command, cb)
 		} else {
 			queue_len += 1
 			setTimeout(function() {
 				queue_len -= 1
 				last_req = new Date()
-				do_request(cb)
+				do_request(command, cb)
 			}, queue_len*1000)
 		}
 	} 
@@ -53,13 +53,25 @@ function Requester() {
 }
 
 r = new Requester()
-yeah = function(response) {
-	console.log("Yeah! " + response)
-}
+r.request("getchartemplate", function(template_str) {
+	template = JSON.parse(template_str)
+	template.name = "szymon"
+	template.dex += 5
+	template.con += 5
 
-r.request(yeah)
-r.request(yeah)
-r.request(yeah)
-r.request(yeah)
+	r.request("createcharacter&arg=name:" + template.name
+		+ ",str:" + template.str
+		+ ",dex:" + template.dex
+		+ ",con:" + template.con
+		+ ",int:" + template.int
+		+ ",wis:" + template.wis, 
+	function(stored) {
+		char = JSON.parse(stored)
 
-console.log("Not waiting!")
+		r.request("getcharacter&arg=" + char._id, function(me) {
+			r.request("deletecharacter&arg=" + char._id, function(res) {
+				console.log('WIN!')
+			})
+		})
+	})
+})
