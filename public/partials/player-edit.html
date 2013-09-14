@@ -1,0 +1,13 @@
+<form ng-submit="savePlayer()" ng-controller="PlayersEditCtrl" class="form-horizontal">
+  <h2>Edit {{player_name}}</h2>
+  <div>
+    <div class="control-group" ng-repeat="prop in player_props">
+      <label class="control-label" for="edit_{{prop.name}}">{{prop.name}}:</label>
+      <div class="controls">
+        <input type="text" id="edit_{{prop.name}}" ng-model="prop.value">
+      </div>
+    </div>
+    <input class="btn-primary" type="submit" value="save">
+  </div>
+</form>
+

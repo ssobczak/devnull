@@ -9,27 +9,30 @@ function Requester() {
 	self = {}
 
 	function do_request(command, deferred) {
+		path = "/api3/?session=" + api_key + "&command=" + command
+		console.log("Requesting " + path)
+
 		var req = https.request({ 
 			host: '192.168.151.182', 
 			port: 8000,
-			path: "/api3/?session=" + api_key + "&command=" + command,
+			path: path,
 			method: 'GET',
 			rejectUnauthorized: false,
 			requestCert: true,
 			agent: false
 	    }, function(res) {
-			var body = [];
+			var body = "";
 		    res.on('data', function(data){
-		        body.push(data);
+		        body += data;
 		    });
 
 		    res.on('end', function(){
-		        console.log( "Got response: " + body.join('') );
-		        deferred.resolve(body.join(''))
+		        console.log( "Got response: " + body);
+		        deferred.resolve(body)
 		    });
 		}).on('error', function(e) {
 		  console.log("Got error: " + e.message);
-		});
+		})
 
 		req.end()
 	}
@@ -62,10 +65,12 @@ function Requester() {
 var app = express();
 app.configure(function(){
   app.use(express.static(__dirname + '/public'));
+  app.use(express.bodyParser());
 });
 
 r = new Requester()
-app.get('/players', function (req, res) {
+
+app.get('/players/list', function (req, res) {
   r.request("getparty")
   	.then(function(player_ids) {
     	player_ids = JSON.parse(player_ids)
@@ -81,9 +86,8 @@ app.get('/players', function (req, res) {
     });
 });
 
-app.listen(8080);
-
-r.request("getchartemplate")
+app.get('/players/new', function (req, res) {
+	r.request("getchartemplate")
 	.then(function(template_str) {
 		template = JSON.parse(template_str)
 		template.name = "szymon"
@@ -97,10 +101,37 @@ r.request("getchartemplate")
 			+ ",int:" + template.int
 			+ ",wis:" + template.wis)
 	}).then(function(stored) {
-		char = JSON.parse(stored)
-
-		return r.request("deletecharacter&arg=" + char._id)
-	}).then(function(res) {
-		console.log('WIN!')
+		res.end(stored)
 	})
+});
 
+app.post('/players/delete', function (req, res) {
+	player = req.body
+
+	r.request("deletecharacter&arg=" + player.id)
+		.then(function(ignore) {
+			res.end('OK')
+		})
+});
+
+app.post('/players/save', function (req, res) {
+	player = req.body
+	console.log("playa: " + JSON.stringify(player))
+
+	r.request("deletecharacter&arg=" + player.id)
+		.then(function() {
+			console.log("a")
+			return r.request("createcharacter&arg="
+					+ "name:" + player.name
+					+ ",str:" + player.str
+					+ ",dex:" + player.dex
+					+ ",con:" + player.con
+					+ ",int:" + player.int
+					+ ",wis:" + player.wis
+			)
+		}).then(function() {
+			res.end('OK')
+		})
+});
+
+app.listen(8080);

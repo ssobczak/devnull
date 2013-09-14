@@ -1,0 +1,12 @@
+<div ng-controller='PlayersListCrtl'>
+	<h2>{{players.length}} players:</h2>
+	<ul>
+	  <li ng-repeat="player in players">
+	    <span>{{player.name}}</span>
+	    <a class="btn" href="/#/players/{{player.id}}/edit"><span class="icon-pencil"></span></a>
+	    <button class="btn" ng-click="deletePlayer(player.id)"><span class="icon-remove"></span></button>
+	  </li>
+	</ul>
+
+	<button class="btn-primary" ng-click="newPlayer()">new</button>
+</div>
