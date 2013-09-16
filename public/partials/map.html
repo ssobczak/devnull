@@ -1,3 +1,18 @@
-<div ng-controller='PlayersListCrtl'>
-	{{map_json}}
+<style type="text/css">
+	.blocked {
+		background-color: red;
+	}
+
+	.free {
+		background-color: green;
+	}
+</style>
+
+<div ng-controller='MapCtrl'>
+	<span>x: {{x}}, y: {{y}}, bx: {{bx}}, by: {{by}}</span>
+	<table>
+		<tr ng-repeat="row in area">
+			<td ng-repeat="cell in row" ng-class="getClass(cell)">{{getSymbol(cell)}}</td>
+		</tr>
+	</table>
 </div>

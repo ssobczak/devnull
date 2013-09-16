@@ -5,7 +5,7 @@ app.config(['$routeProvider', function($routeProvider, $locationProvider) {
   $routeProvider.
       when('/players', {templateUrl: 'partials/players-list.html',   controller: 'PlayersListCrtl'}).
       when('/players/:playerId/edit', {templateUrl: 'partials/player-edit.html', controller: 'PlayersEditCtrl'}).
-      when('/map', {templateUrl: 'partials/map.html', controller: 'MapCtrl'}).
+      when('/map/:playerId', {templateUrl: 'partials/map.html', controller: 'MapCtrl'}).
       otherwise({redirectTo: '/players'});
 }]);
 
@@ -62,8 +62,9 @@ app.factory('playerFactory', ['$http', '$q', function ($http, $q) {
   };
 }]);
 
-app.controller('PlayersListCrtl', ['playerFactory', '$scope', '$location', function (playerFactory, $scope, $location) {
+app.controller('PlayersListCrtl', ['playerFactory', '$scope', '$location', '$rootScope', function (playerFactory, $scope, $location, $rootScope) {
   $scope.players = []
+  $scope.selectedPlayerId = null
 
   function reload() {
     playerFactory.listPlayers().then(function(players) {
@@ -85,6 +86,10 @@ app.controller('PlayersListCrtl', ['playerFactory', '$scope', '$location', funct
       .then(function(resp) {
         reload()
       })
+  }
+
+  $scope.selectPlayer = function() {
+    $rootScope.$broadcast('playerSelected', $scope.selectedPlayerId)
   }
 }])
 

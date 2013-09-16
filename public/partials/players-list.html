@@ -1,12 +1,35 @@
-<div ng-controller='PlayersListCrtl'>
+<style type="text/css">
+	.blocked {
+		background-color: red;
+	}
+
+	.free {
+		background-color: green;
+	}
+</style>
+
+<div ng-controller='PlayersListCrtl' class="span4">
 	<h2>{{players.length}} players:</h2>
 	<ul>
 	  <li ng-repeat="player in players">
+	  	<form>
+	  	<input name ="yolo" type="radio" ng-model="selectedPlayerId" value="{{player.id}}" ng-change="selectPlayer()"></input>
+	  </form>
 	    <span>{{player.name}}</span>
 	    <a class="btn" href="/#/players/{{player.id}}/edit"><span class="icon-pencil"></span></a>
 	    <button class="btn" ng-click="deletePlayer(player.id)"><span class="icon-remove"></span></button>
+	    <a class="btn" href="/#/map/{{player.id}}"><span class="icon-play"></span></a>
 	  </li>
 	</ul>
 
 	<button class="btn-primary" ng-click="newPlayer()">new</button>
+</div>
+
+<div ng-controller='MapCtrl' class="span4">
+	<span>x: {{x}}, y: {{y}}, bx: {{bx}}, by: {{by}}</span>
+	<table>
+		<tr ng-repeat="row in area">
+			<td ng-repeat="cell in row" ng-class="getClass(cell)">{{getSymbol(cell)}}</td>
+		</tr>
+	</table>
 </div>

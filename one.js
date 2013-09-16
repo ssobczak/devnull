@@ -134,4 +134,13 @@ app.post('/players/save', function (req, res) {
 		})
 });
 
+app.post('/map', function (req, res) {
+	id = req.body.playerId
+
+	r.request("scan&arg=" + id)
+		.then(function(map) {
+			res.end(map)
+		})
+});
+
 app.listen(8080);
